@@ -2,74 +2,30 @@ require 'rake'
 require 'yard'
 require 'rake/testtask'
 require 'rake/rdoctask'
+require 'rake/gempackagetask'
 require 'code_statistics'
   
-# Load up the entire host rails enviroment
-require File.dirname(__FILE__) + '/../../../config/environment'
+PKG_FILES = FileList[
+  '[a-zA-Z]*',
+  'generators/**/*',
+  'lib/**/*',
+  'rails/**/*',
+  'tasks/**/*',
+  'test/**/*'
+]
 
-desc 'Default: run eschaton tests.'
-task :default => :test
-
-desc 'Test the eschaton plugin.'
-Rake::TestTask.new(:test) do |t|
-  t.libs << 'lib'
-  t.pattern = 'test/**/*_test.rb'
-  t.verbose = true
+spec = Gem::Specification.new do |s|
+  s.name    = 'eschaton'
+  s.version = '0.0.1'
+  s.platform = Gem::Platform::RUBY
+  s.summary = "Eschaton Mapping Goodness"
+  s.description = "Eschaton Mapping Goodness"
+  s.files = PKG_FILES.to_a
+  s.require_path = "lib"
+  s.has_rdoc = false
 end
 
-desc "Report code statistics (KLOCs, etc) from the eschaton and slices"
-task :stats do
-  STATS_DIRECTORIES = [
-    %w(eschaton           lib/eschaton),
-    %w(kernel_slice       slices/eschaton_kernel),
-    %w(google_maps_slice  slices/google_maps),
-    %w(jquery_slice       slices/jquery)
-  ].collect { |name, dir| [ name, "#{File.dirname(__FILE__)}/#{dir}" ] }.select { |name, dir| File.directory?(dir) }  
-  
-  CodeStatistics.new(*STATS_DIRECTORIES).to_s
-end
-
-desc 'Generate YARD documentation for the eschaton plugin.'
-YARD::Rake::YardocTask.new(:ydoc) do |t|  
-  t.files = ['lib/**/*.rb', "slices/*/**/*.rb"]
-  t.options = ['-r', 'README.rdoc']  
-end
-
-desc 'Generate documentation for the eschaton plugin.'
-Rake::RDocTask.new(:rdoc) do |rdoc|
-  rdoc.rdoc_dir = 'doc'
-  rdoc.title    = 'eschaton'
-  rdoc.options << '--line-numbers' << '--inline-source' << "--force-update"
-  rdoc.rdoc_files.include('README.rdoc')
-  rdoc.main = "README.rdoc"
-
-  rdoc.rdoc_files.include('lib/**/*.rb')
-  rdoc.rdoc_files.include("slices/*/**/*.rb")
-end
-
-desc 'Opens documentation for the eschaton plugin.'
-task :open_doc do
-  `open doc/index.html`
-end
-
-desc 'Default: run eschaton tests.'
-task :rdoc_and_open => [:rdoc, :open_doc]
-
-desc 'Updates eschaton related javascript files.'
-task :update_javascript do
-  update_javascript
-end
-
-desc 'Clones an eschaton slice from a git repo'
-task :clone_slice do
-  Eschaton::SliceCloner.clone :repo => ENV['slice']
-end
-
-def update_javascript
-  project_dir = RAILS_ROOT + '/public/javascripts/'
-
-  FileUtils.cp ['generators/map/templates/eschaton.js'], project_dir
-
-  puts 'Updated javascripts:'
-  puts "  /public/javascripts/eschaton.js"
+desc 'Turn this plugin into a gem.'
+Rake::GemPackageTask.new(spec) do |pkg|
+  pkg.gem_spec = spec
 end
