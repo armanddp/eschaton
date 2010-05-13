@@ -15,6 +15,17 @@ Generate a map, look at the files the generator created and play a bit:
 Put some test code in your <b><i>app/helpers/map_helper.rb</i></b> and *_play_*!
 Visit the map at http://localhost:3000/map or wherever your server runs.
 
+== Rails 3 (In-progress)
+
+Only gem and thor generator working yet.
+
+Specify gem as requirement in Gemfile:
+	$ gem 'eschaton', :git => 'git://github.com/armanddp/eschaton.git', :branch => 'rails3'
+	
+Generate a map, look at the files the generator created and play a bit:
+
+	$ rails generate eschaton:map
+
 == Enough talk, lets code.
 
 Eschaton code can be placed in a view helper, contained within the run_map_script methods' block and it will happily return javascript to you.

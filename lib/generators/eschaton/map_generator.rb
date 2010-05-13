@@ -1,14 +1,14 @@
 require 'rails/generators'
 module Eschaton
   class MapGenerator < Rails::Generators::Base
-    argument :slice_class
+    argument :slice_class, :type => :string, :required => false, :desc => "optional"
      
     def self.source_root
       File.join(File.dirname(__FILE__), 'templates')
     end
 
     def create_config
-      # Config file
+      # Config file 
       copy_file "eschaton_google_api_keys.yml", "config/eschaton_google_api_keys.yml"
     end
     
@@ -17,12 +17,12 @@ module Eschaton
       copy_file "jquery.js", "public/javascripts/jquery.js"
       copy_file "eschaton.js", "public/javascripts/eschaton.js"      
 
-      copy_file "map_controller.rb", "app/controllers/map_controller.rb"
-      copy_file "map_helper.rb", "app/helpers/map_helper.rb"
+      copy_file "maps_controller.rb", "app/controllers/maps_controller.rb"
+      copy_file "maps_helper.rb", "app/helpers/maps_helper.rb"
 
-      empty_directory "app/views/map"
-      copy_file "map.erb", "app/views/layouts/map.html.erb"
-      copy_file "index.erb", "app/views/map/index.html.erb"
+      empty_directory "app/views/maps"
+      copy_file "map.erb", "app/views/layouts/maps.html.erb"
+      copy_file "index.erb", "app/views/maps/index.html.erb"
     end
     
     def create_marker_icons
@@ -45,7 +45,10 @@ module Eschaton
       template "generator_ext.rb", "#{slice_dir}/#{slice_name}_generator_ext.rb" 
       template "view_ext.rb", "#{slice_dir}/#{slice_name}_view_ext.rb"
     end
-    
+   
+    def create_test_route
+      route("resources :maps")
+    end
 
   end
 end

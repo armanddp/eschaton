@@ -1,4 +1,4 @@
-module MapHelper
+module MapsHelper
   
   def init_map
     run_map_script do
